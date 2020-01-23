@@ -8,7 +8,7 @@ public class OpenDataServerCommand implements Command {
 
 	@Override
 	public void doCommand(List<String> arg) {
-		SimulatorServer.getInstance(Integer.parseInt(arg.get(0)), Integer.parseInt(arg.get(1)));
+		SimulatorServer.getInstance(Integer.parseInt(arg.get(0)), Integer.parseInt(arg.get(1))).runServer();;
 	}
 
 }

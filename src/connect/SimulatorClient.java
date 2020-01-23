@@ -30,7 +30,6 @@ public class SimulatorClient implements Client, Observer {
 			return;
 		}
 		try {
-			Thread.sleep(3000);
 			interpreter = new Socket(ip, port);
 			out = new PrintWriter(interpreter.getOutputStream());
 			System.out.println("Client is connected to Simulator Server on port: " + port);

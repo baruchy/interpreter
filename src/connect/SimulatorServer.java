@@ -18,14 +18,18 @@ public class SimulatorServer implements Server {
 	public SimulatorServer(int port, int times) {
 		this.port = port;
 		this.stop = false;
-		this.times = times;
+		this.times = times;		
+	}
+	
+	public void runServer() {
 		new Thread(() -> start()).start();
 	}
 
 	@Override
 	public void start() {
 		try (ServerSocket server = new ServerSocket(port, times);) {
-			System.out.println("Server srated listening on port: " + port);
+			System.out.println("Server srated listening on port: " + port + " at pace: " + times);
+			server.setSoTimeout(10000);
 			while (!stop) {
 				try (Socket client = server.accept();
 						BufferedReader inFromClient = new BufferedReader(
@@ -49,6 +53,7 @@ public class SimulatorServer implements Server {
 
 	@Override
 	public void close() {
+		Thread.currentThread().interrupt();
 		stop = true;
 	}
 
