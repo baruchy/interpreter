@@ -14,6 +14,7 @@ public class SimulatorServer implements Server {
 	private int times;
 	private volatile boolean stop;
 	private static SimulatorServer instance;
+	private ServerSocket server;
 
 	public SimulatorServer(int port, int times) {
 		this.port = port;
@@ -27,9 +28,9 @@ public class SimulatorServer implements Server {
 
 	@Override
 	public void start() {
-		try (ServerSocket server = new ServerSocket(port, times);) {
+		try {
+			server = new ServerSocket(port, times);
 			System.out.println("Server srated listening on port: " + port + " at pace: " + times);
-			server.setSoTimeout(10000);
 			while (!stop) {
 				try (Socket client = server.accept();
 						BufferedReader inFromClient = new BufferedReader(
@@ -40,7 +41,7 @@ public class SimulatorServer implements Server {
 					while ((line = inFromClient.readLine()) != null && !stop) {
 						try {
 							insertValuesIntoDictionary(line);
-						} catch (Exception e) {
+						} catch (NumberFormatException e) {
 							e.printStackTrace();
 						}
 					}
@@ -53,8 +54,14 @@ public class SimulatorServer implements Server {
 
 	@Override
 	public void close() {
-		Thread.currentThread().interrupt();
 		stop = true;
+		if (server != null && !server.isClosed()) {
+			try {
+				server.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public synchronized static SimulatorServer getInstance(int port, int times) {
